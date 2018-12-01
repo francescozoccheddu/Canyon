@@ -2,6 +2,7 @@ var renderer;
 var scene;
 var camera;
 var clock;
+var controls;
 
 window.onload = function () {
 	renderer = new THREE.WebGLRenderer();
@@ -22,7 +23,7 @@ window.onload = function () {
 	controls.dynamicDampingFactor = 0.3;
 	var geometry = new THREE.BoxGeometry(5, 5, 5);
 	var material = new THREE.MeshLambertMaterial({ color: 0xFFFF00 });
-	mesh = new THREE.Mesh(geometry, material);
+	var mesh = new THREE.Mesh(geometry, material);
 	scene.add(mesh);
 	var light = new THREE.PointLight(0xFFFF00);
 	light.position.set(10, 0, 10);
@@ -39,8 +40,8 @@ window.onload = function () {
 }
 
 function render() {
-	deltaTime = clock.getDelta();
-	requestId = requestAnimationFrame(render);
+	var deltaTime = clock.getDelta();
+	requestAnimationFrame(render);
 	controls.update();
 	renderer.render(scene, camera);
 }
