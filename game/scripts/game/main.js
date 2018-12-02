@@ -1,13 +1,21 @@
+'use strict';
+
+const MAX_DELTA_TIME = 1 / 10;
+const FIXED_PHYSICS_TIME_STEP = 1 / 60;
+
 let renderer;
 let scene;
 let camera;
 let clock;
 let controls;
 let physicsWorld;
-let sphereBody;
-let sphereMesh;
 
-let sphere;
+const WIDTH = 3;
+const HEIGHT = 4;
+const Y = 8;
+const positions = [new CANNON.Vec3(-WIDTH, Y, -HEIGHT), new CANNON.Vec3(WIDTH, Y, -HEIGHT), new CANNON.Vec3(-WIDTH, Y, HEIGHT), new CANNON.Vec3(WIDTH, Y, HEIGHT)];
+
+const meshes = [];
 
 class PhysicsMesh {
 	constructor(mesh, body) {
@@ -21,13 +29,12 @@ class PhysicsMesh {
 	}
 }
 
-window.onload = function() {
-	initCannon ();
-	initThree ();
+window.onload = function () {
+	initCannon();
+	initThree();
+	initCar();
 
 	window.addEventListener("resize", resize);
-
-	sphere = new PhysicsMesh(sphereMesh, sphereBody);
 
 	resize();
 	render();
@@ -55,16 +62,9 @@ function initThree() {
 		controls.dynamicDampingFactor = 0.3;
 	}
 
-	{
-		let geometry = new THREE.SphereGeometry(1);
-		let material = new THREE.MeshLambertMaterial({ color: 0xFFFF00 });
-		material.flatShading = true;
-		sphereMesh = new THREE.Mesh(geometry, material);
-		scene.add(sphereMesh);
-	}
 
 	{
-		let light = new THREE.PointLight(0xFFFF00);
+		const light = new THREE.PointLight(0xFFFF00);
 		light.position.set(10, 0, 10);
 		scene.add(light);
 	}
@@ -78,28 +78,77 @@ function initCannon() {
 	physicsWorld.broadphase = new CANNON.NaiveBroadphase();
 
 	{
-		let mass = 5, radius = 1;
-		let sphereShape = new CANNON.Sphere(radius);
-		sphereBody = new CANNON.Body({ mass: mass, shape: sphereShape });
-		sphereBody.position.set(0, 5, 0);
-		physicsWorld.addBody(sphereBody);
-	}
-
-	{
-		let groundShape = new CANNON.Plane();
-		let groundBody = new CANNON.Body({ mass: 0, shape: groundShape });
+		const groundShape = new CANNON.Plane();
+		const groundBody = new CANNON.Body({ mass: 0, shape: groundShape });
 		groundBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), -Math.PI / 2);
 		physicsWorld.addBody(groundBody);
 	}
 }
 
+function initCar() {
+	{
+		const geometry = new THREE.SphereGeometry(1);
+		const mass = 1, radius = 1;
+		const sphereShape = new CANNON.Sphere(radius);
+		const material = new THREE.MeshLambertMaterial({ color: 0xFFFF00 });
+		material.flatShading = true;
+
+		for (let position of positions) {
+			const body = new CANNON.Body({ mass: mass, shape: sphereShape });
+			body.position.copy(position);
+			physicsWorld.addBody(body);
+			const mesh = new THREE.Mesh(geometry, material);
+			scene.add(mesh);
+			const physicsMesh = new PhysicsMesh(mesh, body);
+			meshes.push(physicsMesh);
+		}
+	}
+	{
+		const geometry = new THREE.BoxGeometry(WIDTH, 2, HEIGHT);
+		const mass = 1;
+		const boxShape = new CANNON.Box(new CANNON.Vec3(WIDTH / 2, 2 / 2, HEIGHT / 2));
+		const material = new THREE.MeshLambertMaterial({ color: 0xFF0000 });
+		material.flatShading = true;
+		const body = new CANNON.Body({ mass: mass, shape: boxShape });
+		body.position.copy(new CANNON.Vec3(0, Y + 1, 0));
+		physicsWorld.addBody(body);
+		const mesh = new THREE.Mesh(geometry, material);
+		scene.add(mesh);
+		const physicsMesh = new PhysicsMesh(mesh, body);
+
+		for (const bmesh of meshes) {
+			const spring = new CANNON.Spring({
+				restLength: 0,
+				stiffness: 50,
+				damping: 0.1,
+			});
+			spring.bodyA = body;
+			spring.bodyB = bmesh.body;
+
+			const posb = bmesh.body.position.clone();
+			const posa = new CANNON.Vec3(posb.x, posb.y - 2, posb.z);
+
+			spring.setWorldAnchorA(posa);
+			spring.setWorldAnchorB(posb);
+
+			physicsWorld.addEventListener("postStep", function (event) {
+				spring.applyForce();
+			});
+		}
+
+		meshes.push(physicsMesh);
+	}
+}
+
 function render() {
-	let deltaTime = clock.getDelta();
+	const deltaTime = Math.min(clock.getDelta(), MAX_DELTA_TIME);
 	requestAnimationFrame(render);
 	controls.update();
-	physicsWorld.step(deltaTime);
+	physicsWorld.step(FIXED_PHYSICS_TIME_STEP, deltaTime, 10);
 
-	sphere.update();
+	for (const mesh of meshes) {
+		mesh.update();
+	}
 
 	renderer.render(scene, camera);
 }
