@@ -76,7 +76,6 @@ function initCannon() {
 	physicsWorld = new CANNON.World();
 	physicsWorld.gravity.set(0, -9.81, 0);
 	physicsWorld.broadphase = new CANNON.NaiveBroadphase();
-
 	{
 		const groundShape = new CANNON.Plane();
 		const groundBody = new CANNON.Body({ mass: 0, shape: groundShape });
@@ -145,7 +144,7 @@ function render() {
 	requestAnimationFrame(render);
 	controls.update();
 	physicsWorld.step(FIXED_PHYSICS_TIME_STEP, deltaTime, 10);
-
+ 
 	for (const mesh of meshes) {
 		mesh.update();
 	}
