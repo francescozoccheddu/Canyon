@@ -2,6 +2,12 @@ import os
 import json
 import c4d
 
+# Parameters
+
+scale = 1.0 / 100.0
+
+
+# Helper classes
 
 class ExportException(Exception):
 
@@ -22,12 +28,14 @@ class ExportException(Exception):
 class ObjectExportException(ExportException):
 
     def __init__(self, object, message, cause=None):
-        super(message, cause)
+        ExportException.__init__(self, message, cause)
         self.object = object
 
     def GetMessage(self):
-        return "{}\nObject '{}'".format(super().GetMessage(), self.object.GetName())
+        return "{}\nObject '{}'".format(super(ObjectExportException, self).GetMessage(), self.object.GetName())
 
+
+# Helper functions
 
 def ToList(struct):
     if type(struct) is c4d.Vector:
@@ -43,11 +51,6 @@ def ToList(struct):
         raise ValueError("Unknown struct type")
 
 
-# Parameters
-scale = 1.0 / 100.0
-script_directory = os.path.dirname(os.path.realpath(__file__))
-
-
 def WriteFile(filename, content):
     with open(filename, "w") as file:
         file.write(content)
@@ -56,6 +59,8 @@ def WriteFile(filename, content):
 def Log(msg):
     print(msg)
 
+
+# Functions
 
 def BuildFloor(obj):
     return {
@@ -148,7 +153,6 @@ def BuildCone(obj):
         inverted = True
     else:
         raise ValueError("Unknown axis")
-    height = obj[c4d.PRIM_CYLINDER_HEIGHT]
     return {
         "type": "cylinder",
         "bottom_radius": top_radius if inverted else bottom_radius,
@@ -211,7 +215,7 @@ def Export():
     shapes = BuildObjects(objs)
     content = json.dumps(shapes)
     filename = c4d.storage.SaveDialog(
-        title="Export shapes", def_path=script_directory)
+        title="Export shapes", def_path=os.path.dirname(os.path.realpath(__file__)))
     WriteFile(filename, content)
 
 
