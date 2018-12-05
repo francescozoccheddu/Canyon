@@ -30,6 +30,7 @@ class PhysicsMesh {
 }
 
 window.onload = function () {
+
 	initCannon();
 	initThree();
 	initCar();
@@ -144,7 +145,7 @@ function render() {
 	requestAnimationFrame(render);
 	controls.update();
 	physicsWorld.step(FIXED_PHYSICS_TIME_STEP, deltaTime, 10);
- 
+
 	for (const mesh of meshes) {
 		mesh.update();
 	}

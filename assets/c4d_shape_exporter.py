@@ -73,7 +73,7 @@ def BuildCube(obj):
         raise ObjectExportException(obj, "Fillet is not supported")
     return {
         "type": "cube",
-        "extent": ToList(obj[c4d.PRIM_CUBE_LEN] * scale)
+        "extents": ToList(obj[c4d.PRIM_CUBE_LEN] * scale)
     }
 
 
@@ -119,10 +119,11 @@ def BuildCylinder(obj):
     radius = obj[c4d.PRIM_CYLINDER_RADIUS] * scale
     return {
         "type": "cylinder",
-        "bottom_radius": radius,
-        "top_radius": radius,
+        "bottomRadius": radius,
+        "topRadius": radius,
         "height": obj[c4d.PRIM_CYLINDER_HEIGHT] * scale,
-        "axis": axis
+        "axis": axis,
+        "segments": obj[c4d.PRIM_CYLINDER_SEG]
     }
 
 
@@ -155,10 +156,11 @@ def BuildCone(obj):
         raise ValueError("Unknown axis")
     return {
         "type": "cylinder",
-        "bottom_radius": top_radius if inverted else bottom_radius,
-        "top_radius": bottom_radius if inverted else top_radius,
+        "bottomRadius": top_radius if inverted else bottom_radius,
+        "topRadius": bottom_radius if inverted else top_radius,
         "height": obj[c4d.PRIM_CONE_HEIGHT] * scale,
-        "axis": axis
+        "axis": axis,
+        "segments": obj[c4d.PRIM_CONE_SEG]
     }
 
 
