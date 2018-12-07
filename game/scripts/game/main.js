@@ -35,10 +35,33 @@ window.onload = function () {
 	initThree();
 	initCar();
 
+
 	window.addEventListener("resize", resize);
 
 	resize();
 	render();
+}
+
+function loadScene(dict, shapes, meshes) {
+	const physicsMeshes = [];
+	const objects = [];
+
+	for (const key in dict) {
+		const node = dict[key];
+		switch (node.type) {
+			case "model":
+				{
+
+				}
+				break;
+			case "spring":
+				{
+
+				}
+				break;
+		}
+	}
+
 }
 
 function initThree() {

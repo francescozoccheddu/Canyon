@@ -83,9 +83,7 @@ def BuildPolygon(obj):
         verts += ToList(point * scale)
     inds = []
     for poly in obj.GetAllPolygons():
-        if not poly.IsTriangle():
-            raise ObjectExportException(obj, "Untriangulated polygon object")
-        inds += ToList(poly)
+        inds += [ToList(poly)]
     return {
         "type": "polygon",
         "vertices": verts,
