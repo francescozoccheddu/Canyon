@@ -2,7 +2,7 @@
 
 const ImportHelper = {};
 
-ImportHelper.LoadJSON = function (file, callback) {
+ImportHelper.loadJSON = function (file, callback) {
     const xobj = new XMLHttpRequest();
     xobj.overrideMimeType("application/json");
     xobj.open('GET', file, true);
@@ -14,7 +14,7 @@ ImportHelper.LoadJSON = function (file, callback) {
     xobj.send(null);
 }
 
-ImportHelper.ImportShapes = function (shapes) {
+ImportHelper.importShapes = function (shapes) {
 
     class ShapeDefinition {
 
@@ -36,7 +36,7 @@ ImportHelper.ImportShapes = function (shapes) {
 
     }
 
-    function CreateShapeDefinitions(node) {
+    function createShapeDefinitions(node) {
 
         const noOffset = new CANNON.Vec3(0, 0, 0);
         const noRotation = new CANNON.Quaternion(0, 0, 0, 1);
@@ -54,7 +54,7 @@ ImportHelper.ImportShapes = function (shapes) {
                 }
             case "cube":
                 {
-                    const extents = ImportHelper.ArrayToVec3(node.extents);
+                    const extents = ImportHelper.arrayToVec3(node.extents);
                     const shape = new CANNON.Box(extents.scale(1 / 2));
                     return [new ShapeDefinition(shape, noOffset, noRotation)];
                 }
@@ -62,7 +62,7 @@ ImportHelper.ImportShapes = function (shapes) {
                 {
                     const verts = [];
                     for (let i = 0; i < node.vertices.length; i += 3) {
-                        verts.push(ImportHelper.ArrayToVec3(node.vertices.slice(i, i + 3)));
+                        verts.push(ImportHelper.arrayToVec3(node.vertices.slice(i, i + 3)));
                     }
                     const shape = new CANNON.ConvexPolyhedron(verts, node.indices);
                     return [new ShapeDefinition(shape, noOffset, noRotation)];
@@ -93,9 +93,9 @@ ImportHelper.ImportShapes = function (shapes) {
                 {
                     const defs = [];
                     for (const child of node.shapes) {
-                        const position = ImportHelper.ArrayToVec3(child.position);
-                        const quaternion = ImportHelper.ArrayToQuaternion(child.quaternion);
-                        const chdefs = CreateShapeDefinitions(child.shape)
+                        const position = ImportHelper.arrayToVec3(child.position);
+                        const quaternion = ImportHelper.arrayToQuaternion(child.quaternion);
+                        const chdefs = createShapeDefinitions(child.shape)
                         for (const chdef of chdefs) {
                             chdef.transform(position, quaternion);
                             defs.push(chdef);
@@ -108,17 +108,17 @@ ImportHelper.ImportShapes = function (shapes) {
 
     const defs = {};
     for (const key in shapes) {
-        defs[key] = CreateShapeDefinitions(shapes[key]);
+        defs[key] = createShapeDefinitions(shapes[key]);
     }
     return defs;
 }
 
-ImportHelper.ArrayToVec3 = function (array) {
+ImportHelper.arrayToVec3 = function (array) {
     const [x, y, z] = array;
     return new CANNON.Vec3(x, y, z);
 }
 
-ImportHelper.ArrayToQuaternion = function (array) {
+ImportHelper.arrayToQuaternion = function (array) {
     const [x, y, z, w] = array;
     return new CANNON.Quaternion(x, y, z, w);
 }
