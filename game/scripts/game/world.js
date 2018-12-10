@@ -1,9 +1,9 @@
 'use strict';
 
-function GameWorld(objs) {
+function GameWorld(children) {
 
 	console.log("new GameWorld");
-	console.log(objs);
+	console.log(children);
 
 	const MAX_DELTA_TIME = 1 / 10;
 	const FIXED_PHYSICS_TIME_STEP = 1 / 60;
@@ -13,6 +13,11 @@ function GameWorld(objs) {
 		constructor(mesh, body) {
 			this.mesh = mesh;
 			this.body = body;
+		}
+
+		updateInverse() {
+			this.body.position.copy(this.mesh.position)
+			this.body.quaternion.copy(this.mesh.quaternion)
 		}
 
 		update() {
@@ -30,6 +35,19 @@ function GameWorld(objs) {
 
 	ImportHelper.loadJSON("assets/shapes.json", function (jobj) {
 		const shapes = ImportHelper.importShapes(jobj);
+		for (const child of children) {
+			if (child.userData.physicsShape !== undefined) {
+				const shape = shapes[child.userData.physicsShape];
+				const body = new CANNON.Body({ mass: child.userData.physicsMass });
+				physicsWorld.addBody(body);
+				for (const shapeDef of shape) {
+					shapeDef.addToBody(body);
+				}
+				const object = new PhysicsMesh(child, body);
+				object.updateInverse();
+				objects.push(object);
+			}
+		}
 	});
 
 	this.update = function (deltaTime) {
