@@ -25,8 +25,7 @@ function GameWorld(children) {
 		}
 	}
 
-	const objects = [];
-	const namedObjects = {};
+	const namedPhysicsObjects = {};
 
 	const physicsWorld = new CANNON.World();
 	physicsWorld.gravity.copy(GRAVITY);
@@ -47,12 +46,37 @@ function GameWorld(children) {
 						for (const shapeDef of shape) {
 							shapeDef.addToBody(body);
 						}
-						const object = new PhysicsMesh(child, body);
-						object.updateInverse();
-						objects.push(object);
-						if (typeof(child.userData.name) !== undefined) {
-							namedObjects[child.userData.name] = body;
+						body.position.copy(child.position)
+						body.quaternion.copy(child.quaternion)
+						physicsWorld.addEventListener("postStep", function () {
+							child.position.copy(body.position)
+							child.quaternion.copy(body.quaternion)
+						});
+						if (child.userData.name !== undefined) {
+							namedPhysicsObjects[child.userData.name] = body;
 						}
+					}
+					break;
+			}
+		}
+		for (const child of children) {
+			switch (child.userData.type) {
+				case "spring":
+					{
+						const spring = new CANNON.Spring({ 
+							restLength: 0, 
+							stiffness: 50, 
+							damping: 0.1, 
+						});
+						spring.bodyA = namedPhysicsObjects[child.userData.bodyA];
+						spring.bodyB = namedPhysicsObjects[child.userData.bodyB];
+						const position = new CANNON.Vec3();
+						position.copy(child.position);
+						spring.setWorldAnchorA(position);
+						spring.setWorldAnchorB(position);
+						physicsWorld.addEventListener("postStep", function () {
+							spring.applyForce();
+						});
 					}
 					break;
 			}
@@ -62,10 +86,6 @@ function GameWorld(children) {
 	this.update = function (deltaTime) {
 		const clampedDeltaTime = Math.min(deltaTime, MAX_DELTA_TIME);
 		physicsWorld.step(FIXED_PHYSICS_TIME_STEP, clampedDeltaTime, 10);
-
-		for (const object of objects) {
-			object.update();
-		}
 	}
 
 }
