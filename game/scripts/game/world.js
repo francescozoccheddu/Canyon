@@ -3,7 +3,6 @@
 function GameWorld(children) {
 
 	console.log("new GameWorld");
-	console.log(children);
 
 	const MAX_DELTA_TIME = 1 / 10;
 	const FIXED_PHYSICS_TIME_STEP = 1 / 60;
@@ -34,18 +33,28 @@ function GameWorld(children) {
 	physicsWorld.broadphase = new CANNON.NaiveBroadphase();
 
 	ImportHelper.loadJSON("assets/shapes.json", function (jobj) {
+
+		console.log("Shapes imported");
+
 		const shapes = ImportHelper.importShapes(jobj);
 		for (const child of children) {
-			if (child.userData.physicsShape !== undefined) {
-				const shape = shapes[child.userData.physicsShape];
-				const body = new CANNON.Body({ mass: child.userData.physicsMass });
-				physicsWorld.addBody(body);
-				for (const shapeDef of shape) {
-					shapeDef.addToBody(body);
-				}
-				const object = new PhysicsMesh(child, body);
-				object.updateInverse();
-				objects.push(object);
+			switch (child.userData.type) {
+				case "body":
+					{
+						const shape = shapes[child.userData.shape];
+						const body = new CANNON.Body({ mass: child.userData.mass });
+						physicsWorld.addBody(body);
+						for (const shapeDef of shape) {
+							shapeDef.addToBody(body);
+						}
+						const object = new PhysicsMesh(child, body);
+						object.updateInverse();
+						objects.push(object);
+						if (typeof(child.userData.name) !== undefined) {
+							namedObjects[child.userData.name] = body;
+						}
+					}
+					break;
 			}
 		}
 	});

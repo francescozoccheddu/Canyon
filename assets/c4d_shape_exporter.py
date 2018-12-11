@@ -1,11 +1,12 @@
 import os
 import json
+import math
 import c4d
 
 # Parameters
 
 scale = 1.0 / 100.0
-
+filepath = os.path.join(os.path.dirname(os.path.realpath(__file__)), "../game/assets/shapes.json")
 
 # Helper classes
 
@@ -168,6 +169,9 @@ def BuildNullChildren(obj):
         position = child.GetAbsPos() * scale
         quaternion = c4d.Quaternion()
         quaternion.SetHPB(child.GetAbsRot())
+        print("quaternion:")
+        print(quaternion)
+        print(ToList(quaternion))
         children += [{
             "shape": BuildObject(child),
             "position": ToList(position),
@@ -214,9 +218,7 @@ def Export():
     objs = doc.GetActiveObjects(c4d.GETACTIVEOBJECTFLAGS_0)
     shapes = BuildObjects(objs)
     content = json.dumps(shapes)
-    filename = c4d.storage.SaveDialog(
-        title="Export shapes", def_path=os.path.dirname(os.path.realpath(__file__)))
-    WriteFile(filename, content)
+    WriteFile(filepath, content)
 
 
 def main():
