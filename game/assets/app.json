@@ -15,11 +15,11 @@
 			"generator": "Object3D.toJSON"
 		},
 		"object": {
-			"uuid": "444B13AE-213F-4BD7-B7CE-AAC8DFBFA57F",
+			"uuid": "A451B2CC-43A1-4BB9-BCC2-19BF15232FE8",
 			"type": "PerspectiveCamera",
 			"name": "Camera",
 			"layers": 1,
-			"matrix": [0.014083,0,-0.999901,0,-0.410853,0.911683,-0.005787,0,0.911593,0.410893,0.01284,0,32.945018,18.446947,-3.246857,1],
+			"matrix": [0.014072,0,-0.999901,0,-0.786838,0.61706,-0.011074,0,0.616999,0.786916,0.008683,0,17.391596,32.747983,-0.935334,1],
 			"fov": 50,
 			"zoom": 1,
 			"near": 0.01,
@@ -199,7 +199,7 @@
 				{
 					"uuid": "F6703523-4573-45C4-B50D-421CA598B36D",
 					"type": "Mesh",
-					"name": "Sphere",
+					"name": "Sphere_4",
 					"userData": {
 						"type": "body",
 						"shape": "Sphere",
@@ -214,7 +214,7 @@
 				{
 					"uuid": "A0962986-CC02-4EE5-A342-8FD2DD1D4B69",
 					"type": "Mesh",
-					"name": "Sphere",
+					"name": "Sphere_3",
 					"userData": {
 						"type": "body",
 						"shape": "Sphere",
@@ -229,7 +229,7 @@
 				{
 					"uuid": "B5F70254-B7EA-43D9-B4D9-2ABEBA960712",
 					"type": "Mesh",
-					"name": "Sphere",
+					"name": "Sphere_2",
 					"userData": {
 						"type": "body",
 						"shape": "Sphere",
@@ -244,7 +244,7 @@
 				{
 					"uuid": "E1322276-B882-4503-B02F-2009CB9764A2",
 					"type": "Mesh",
-					"name": "Sphere",
+					"name": "Sphere_1",
 					"userData": {
 						"type": "body",
 						"shape": "Sphere",
@@ -284,6 +284,54 @@
 					"matrix": [10,0,0,0,0,0,-10,0,0,10,0,0,0,0,0,1],
 					"geometry": "E208EF57-D59B-4ED4-BD7E-EEEB5CDB3007",
 					"material": "47CD7A7A-EDF7-41BE-A1FE-471F69A39C65"
+				},
+				{
+					"uuid": "BDE8940E-8927-47FA-AAC1-CA8CA58A694A",
+					"type": "Group",
+					"name": "Spring_4",
+					"userData": {
+						"type": "spring",
+						"bodyA": "Cube",
+						"bodyB": "Sphere_4"
+					},
+					"layers": 1,
+					"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,3,3,-3,1]
+				},
+				{
+					"uuid": "17AD8D15-F58E-46C3-A432-381E4D5DC8E0",
+					"type": "Group",
+					"name": "Spring_3",
+					"userData": {
+						"type": "spring",
+						"bodyA": "Cube",
+						"bodyB": "Sphere_3"
+					},
+					"layers": 1,
+					"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,-3,3,3,1]
+				},
+				{
+					"uuid": "6ECAEEB0-358B-4B70-9E70-C26DEE5D014F",
+					"type": "Group",
+					"name": "Spring_2",
+					"userData": {
+						"type": "spring",
+						"bodyA": "Cube",
+						"bodyB": "Sphere_2"
+					},
+					"layers": 1,
+					"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,3,3,3,1]
+				},
+				{
+					"uuid": "66BEC546-406B-4CF7-B56F-8B610140D50D",
+					"type": "Group",
+					"name": "Spring_1",
+					"userData": {
+						"type": "spring",
+						"bodyA": "Cube",
+						"bodyB": "Sphere_1"
+					},
+					"layers": 1,
+					"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,-3,3,-3,1]
 				}],
 			"background": 11184810
 		}
