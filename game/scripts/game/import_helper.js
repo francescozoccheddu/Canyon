@@ -25,9 +25,8 @@ ImportHelper.importShapes = function (shapes) {
         }
 
         transform(position, quaternion) {
-            quaternion.vmult(this.position, this.position)
-            position.vadd(this.position, this.position);
-            quaternion.mult(this.quaternion, this.quaternion);
+            this.position = quaternion.vmult(this.position).vadd(position);
+            this.quaternion = quaternion.mult(this.quaternion);
         }
 
         addToBody(body) {
